@@ -1,0 +1,5 @@
+version: 0.0 # Appspec version.
+os: linux # Operating system of the target instance.
+files:
+  - source: / # Source directory of the files in the artifact.
+    destination: /var/www/html/ # Destination directory on the EC2 instance.
