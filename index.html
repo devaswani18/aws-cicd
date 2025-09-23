@@ -1,20 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Page</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR & Aptitude Quiz</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f0f2f5; }
+  header { background: #4CAF50; color: white; padding: 15px; text-align: center; }
+  nav { display: flex; justify-content: center; margin-top: 10px; }
+  nav button { margin: 0 10px; padding: 10px 20px; cursor: pointer; border: none; border-radius: 5px; background: #ddd; }
+  nav button.active { background: #4CAF50; color: white; }
+  section { display: none; padding: 20px; max-width: 600px; margin: auto; background: white; margin-top: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+  section.active { display: block; }
+  input, button { padding: 10px; margin-top: 10px; width: 100%; }
+  #qrCode img { margin-top: 15px; max-width: 100%; }
+  .quiz-question { margin-bottom: 20px; }
+  .quiz-options button { display: block; margin: 5px 0; width: 100%; }
+  .score { font-weight: bold; margin-top: 10px; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 </head>
 <body>
-    <h1>Deployment Test Page</h1>
-    <p>This is a simple test to check if CI/CD is working.</p>
-    
-    <button onclick="showAlert()">Click Me</button>
 
-    <script>
-        function showAlert() {
-            alert("Hello! Deployment successful!");
-        }
-    </script>
+<header>
+  <h1>QR & Aptitude Quiz</h1>
+</header>
+
+<nav>
+  <button id="qrTab" class="active">QR Code Generator</button>
+  <button id="quizTab">Aptitude Quiz</button>
+</nav>
+
+<!-- QR Code Generator Section -->
+<section id="qrSection" class="active">
+  <h2>Generate QR Code</h2>
+  <input type="text" id="qrInput" placeholder="Enter URL or text">
+  <button onclick="generateQR()">Generate QR Code</button>
+  <div id="qrCode"></div>
+  <button onclick="downloadQR()">Download QR</button>
+</section>
+
+<!-- Quiz Section -->
+<section id="quizSection">
+  <h2>Aptitude Quiz</h2>
+  <div id="quizContainer"></div>
+  <div class="score" id="quizScore"></div>
+  <button id="restartQuiz" onclick="startQuiz()" style="display:none;">Restart Quiz</button>
+</section>
+
+<script>
+  // --- Tabs ---
+  const qrTab = document.getElementById('qrTab');
+  const quizTab = document.getElementById('quizTab');
+  const qrSection = document.getElementById('qrSection');
+  const quizSection = document.getElementById('quizSection');
+
+  qrTab.onclick = () => { qrSection.classList.add('active'); quizSection.classList.remove('active'); qrTab.classList.add('active'); quizTab.classList.remove('active'); }
+  quizTab.onclick = () => { quizSection.classList.add('active'); qrSection.classList.remove('active'); quizTab.classList.add('active'); qrTab.classList.remove('active'); }
+
+  // --- QR Code Generator ---
+  const qr = new QRious({ element: document.createElement('canvas'), size: 250 });
+  document.getElementById('qrCode').appendChild(qr.element);
+
+  function generateQR() {
+    const text = document.getElementById('qrInput').value;
+    if (!text) return alert('Enter text or URL!');
+    qr.value = text;
+  }
+
+  function downloadQR() {
+    const link = document.createElement('a');
+    link.href = qr.element.toDataURL('image/png');
+    link.download = 'qr-code.png';
+    link.click();
+  }
+
+  // --- Quiz ---
+  const questions = [
+    { q: "What is 15 + 27?", options: ["42","32","52","40"], answer: "42" },
+    { q: "Which number is prime?", options: ["21","29","35","49"], answer: "29" },
+    { q: "What is 12 × 8?", options: ["90","96","100","88"], answer: "96" },
+    { q: "If a train travels 60km/h for 2 hours, distance?", options: ["120km","100km","150km","110km"], answer: "120km" },
+    { q: "Next in series: 2, 4, 8, 16, ?", options: ["20","32","24","18"], answer: "32" },
+  ];
+
+  let current = 0, score = 0;
+  const quizContainer = document.getElementById('quizContainer');
+  const quizScore = document.getElementById('quizScore');
+  const restartQuiz = document.getElementById('restartQuiz');
+
+  function startQuiz() {
+    current = 0; score = 0; quizScore.innerHTML = ''; restartQuiz.style.display='none';
+    showQuestion();
+  }
+
+  function showQuestion() {
+    if (current >= questions.length) return endQuiz();
+    const q = questions[current];
+    quizContainer.innerHTML = `<div class="quiz-question"><strong>Q${current+1}:</strong> ${q.q}</div>` + 
+      `<div class="quiz-options">` + q.options.map(opt => `<button onclick="answer('${opt}')">${opt}</button>`).join('') + `</div>`;
+  }
+
+  function answer(opt) {
+    if(opt === questions[current].answer) score++;
+    current++;
+    showQuestion();
+  }
+
+  function endQuiz() {
+    quizContainer.innerHTML = `<h3>Quiz Completed!</h3>`;
+    quizScore.innerHTML = `Your Score: ${score} / ${questions.length}`;
+    restartQuiz.style.display = 'block';
+  }
+
+  // Initialize quiz
+  startQuiz();
+</script>
+
 </body>
 </html>
