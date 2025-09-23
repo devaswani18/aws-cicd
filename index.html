@@ -1,18 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Styled Page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Form</title>
   <style>
     body {
-      background-color: #222;
-      color: #fff;
-      text-align: center;
       font-family: Arial, sans-serif;
+      margin: 50px;
+    }
+    form {
+      max-width: 500px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    input, textarea, button {
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+    }
+    button:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
 <body>
-  <h1>Deployed via GitHub → AWS</h1>
-  <p>This has a dark theme background 🎨</p>
+
+<h2>Contact Us</h2>
+
+<form>
+  <input type="text" placeholder="Your Name" required>
+  <input type="email" placeholder="Your Email" required>
+  <textarea placeholder="Your Message" rows="5" required></textarea>
+  <button type="submit">Send Message</button>
+</form>
+
+<!-- Contact Form Script -->
+<script>
+  // Replace <API_ID> with your actual API Gateway ID
+  const API_URL = " https://tgcp4nuk52.execute-api.ap-south-1.amazonaws.com/prod/contact";
+
+  const form = document.querySelector('form');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = form.querySelector('input[placeholder="Your Name"]').value;
+    const email = form.querySelector('input[placeholder="Your Email"]').value;
+    const message = form.querySelector('textarea').value;
+
+    const payload = { name, email, message };
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.message || 'Message sent — thank you!');
+        form.reset();
+      } else {
+        throw new Error(data.error || 'Send failed');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Could not send message: ' + err.message);
+    }
+  });
+</script>
+
 </body>
 </html>
