@@ -1,14 +1,13 @@
-version: 0.2 # Buildspec version.
-
+version: 0.2
 phases:
-  install: # Commands for installing dependencies.
+  install:
     runtime-versions:
       python: 3.8
-  build: # Commands for the build phase.
+  build:
     commands:
       - echo "Build started on date"
       - echo "Building the application..."
-
+      - exit 1   # <-- Deliberate failure here
 artifacts:
   files:
-    - '**/*'  # Include all files in your source directory
+    - '/*'
