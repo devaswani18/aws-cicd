@@ -1,4 +1,5 @@
 version: 0.2 # Buildspec version.
+
 phases:
   install: # Commands for installing dependencies.
     runtime-versions:
@@ -7,6 +8,7 @@ phases:
     commands:
       - echo "Build started on date"
       - echo "Building the application..."
+
 artifacts:
   files:
-    - '/*' # Specifies that all files should be packaged as the artifact.
+    - '**/*'  # Include all files in your source directory
