@@ -1,13 +1,12 @@
-version: 0.2
-
+version: 0.2 # Buildspec version.
 phases:
-  install:
+  install: # Commands for installing dependencies.
+    runtime-versions:
+      python: 3.8
+  build: # Commands for the build phase.
     commands:
-      - echo "Installing dependencies..." 
-  build:
-    commands:
-      - echo "Forcing failure for demo"
-      - exit 1   # This line makes the build fail
+      - echo "Build started on date"
+      - echo "Building the application..."
 artifacts:
   files:
-    - '**/*'
+    - '/*' # Specifies that all files should be packaged as the artifact.
